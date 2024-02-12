@@ -59,6 +59,7 @@ export interface KhaltiRequestDto {
 export interface KhaltiOptions {
     paymentMode: PaymentMode;
     secretKey: string;
+    secretKeyEPayment?: string;
     initiateUrl?: string;
     initiateUrlForTest?: string;
     lookupUrl?: string;

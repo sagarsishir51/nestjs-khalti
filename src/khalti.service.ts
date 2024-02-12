@@ -1,4 +1,4 @@
-import {BadRequestException, Inject, Injectable} from '@nestjs/common';
+import {BadRequestException, Inject, Injectable, InternalServerErrorException} from '@nestjs/common';
 import {HttpService} from '@nestjs/axios';
 import {firstValueFrom} from 'rxjs';
 import {
@@ -19,6 +19,7 @@ import {
 export class KhaltiService {
     private readonly paymentMode = null;
     private readonly secretKey = null;
+    private readonly secretKeyEPayment = null;
     private readonly initiateUrl = null;
     private readonly initiateUrlForTest = null;
     private readonly lookupUrl = null;
@@ -27,8 +28,12 @@ export class KhaltiService {
     private readonly verifyUrlForTest = null;
 
     constructor(@Inject(KHALTI_CONFIG_OPTIONS) private readonly options: KhaltiOptions, private readonly httpService: HttpService) {
+        if (!options.secretKey) {
+            throw new InternalServerErrorException("Secret Key for khalti payment is missing")
+        }
         this.paymentMode = options.paymentMode || PaymentMode.TEST;
         this.secretKey = options.secretKey;
+        this.secretKeyEPayment = options?.secretKeyEPayment || options?.secretKey;
         this.initiateUrl = options.initiateUrl || KHALTI_PAYMENT_URL;
         this.initiateUrlForTest = options.initiateUrlForTest || KHALTI_PAYMENT_TEST_URL;
         this.lookupUrl = options.lookupUrl || KHALTI_LOOKUP_URL;
@@ -68,7 +73,7 @@ export class KhaltiService {
                 this.paymentMode.localeCompare(PaymentMode.TEST) == 0 ? this.initiateUrlForTest : this.initiateUrl,
                 khaltiDto, {
                     headers: {
-                        Authorization: this.secretKey,
+                        Authorization: this.secretKeyEPayment,
                     },
                 }));
     }
@@ -84,7 +89,7 @@ export class KhaltiService {
                 {pidx},
                 {
                     headers: {
-                        Authorization: this.secretKey,
+                        Authorization: this.secretKeyEPayment,
                     },
                 },
             ));
