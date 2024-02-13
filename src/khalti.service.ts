@@ -1,4 +1,4 @@
-import {BadRequestException, Inject, Injectable} from '@nestjs/common';
+import {BadRequestException, Inject, Injectable, InternalServerErrorException} from '@nestjs/common';
 import {HttpService} from '@nestjs/axios';
 import {firstValueFrom} from 'rxjs';
 import {
@@ -7,7 +7,6 @@ import {
     KHALTI_LOOKUP_URL,
     KHALTI_PAYMENT_TEST_URL,
     KHALTI_PAYMENT_URL,
-    KHALTI_VERIFY_TEST_URL,
     KHALTI_VERIFY_URL,
     KhaltiDto,
     KhaltiOptions,
@@ -19,22 +18,25 @@ import {
 export class KhaltiService {
     private readonly paymentMode = null;
     private readonly secretKey = null;
+    private readonly secretKeyEPayment = null;
     private readonly initiateUrl = null;
     private readonly initiateUrlForTest = null;
     private readonly lookupUrl = null;
     private readonly lookupUrlForTest = null;
     private readonly verifyUrl = null;
-    private readonly verifyUrlForTest = null;
 
     constructor(@Inject(KHALTI_CONFIG_OPTIONS) private readonly options: KhaltiOptions, private readonly httpService: HttpService) {
+        if (!options.secretKey) {
+            throw new InternalServerErrorException("Secret Key for khalti payment is missing")
+        }
         this.paymentMode = options.paymentMode || PaymentMode.TEST;
         this.secretKey = options.secretKey;
+        this.secretKeyEPayment = options?.secretKeyEPayment || options?.secretKey;
         this.initiateUrl = options.initiateUrl || KHALTI_PAYMENT_URL;
         this.initiateUrlForTest = options.initiateUrlForTest || KHALTI_PAYMENT_TEST_URL;
         this.lookupUrl = options.lookupUrl || KHALTI_LOOKUP_URL;
         this.lookupUrlForTest = options.lookupUrl || KHALTI_LOOKUP_TEST_URL;
         this.verifyUrl = KHALTI_VERIFY_URL;
-        this.verifyUrlForTest = KHALTI_VERIFY_TEST_URL;
     }
 
 
@@ -68,7 +70,7 @@ export class KhaltiService {
                 this.paymentMode.localeCompare(PaymentMode.TEST) == 0 ? this.initiateUrlForTest : this.initiateUrl,
                 khaltiDto, {
                     headers: {
-                        Authorization: this.secretKey,
+                        Authorization: this.secretKeyEPayment,
                     },
                 }));
     }
@@ -84,7 +86,7 @@ export class KhaltiService {
                 {pidx},
                 {
                     headers: {
-                        Authorization: this.secretKey,
+                        Authorization: this.secretKeyEPayment,
                     },
                 },
             ));
@@ -98,10 +100,9 @@ export class KhaltiService {
         if (!amount) {
             throw new BadRequestException("amount key missing for validating khalti payment");
         }
-        const url = this.paymentMode.localeCompare(PaymentMode.TEST) == 0 ? this.verifyUrlForTest : this.verifyUrl;
         return await firstValueFrom(this.httpService
             .post(
-                `${url}`,
+                this.verifyUrl,
                 {token, amount},
                 {
                     headers: {
