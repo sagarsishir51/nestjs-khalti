@@ -5,7 +5,6 @@ export const KHALTI_PAYMENT_TEST_URL = 'https://a.khalti.com/api/v2/epayment/ini
 export const KHALTI_PAYMENT_URL = 'https://khalti.com/api/v2/epayment/initiate/'
 export const KHALTI_LOOKUP_TEST_URL = 'https://a.khalti.com/api/v2/epayment/lookup/'
 export const KHALTI_LOOKUP_URL = 'https://khalti.com/api/v2/epayment/lookup/'
-export const KHALTI_VERIFY_TEST_URL = 'https://a.khalti.com/api/v2/payment/verify/'
 export const KHALTI_VERIFY_URL = 'https://khalti.com/api/v2/payment/verify/'
 
 export enum PaymentMode {

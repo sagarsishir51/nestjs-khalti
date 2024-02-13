@@ -7,7 +7,6 @@ import {
     KHALTI_LOOKUP_URL,
     KHALTI_PAYMENT_TEST_URL,
     KHALTI_PAYMENT_URL,
-    KHALTI_VERIFY_TEST_URL,
     KHALTI_VERIFY_URL,
     KhaltiDto,
     KhaltiOptions,
@@ -25,7 +24,6 @@ export class KhaltiService {
     private readonly lookupUrl = null;
     private readonly lookupUrlForTest = null;
     private readonly verifyUrl = null;
-    private readonly verifyUrlForTest = null;
 
     constructor(@Inject(KHALTI_CONFIG_OPTIONS) private readonly options: KhaltiOptions, private readonly httpService: HttpService) {
         if (!options.secretKey) {
@@ -39,7 +37,6 @@ export class KhaltiService {
         this.lookupUrl = options.lookupUrl || KHALTI_LOOKUP_URL;
         this.lookupUrlForTest = options.lookupUrl || KHALTI_LOOKUP_TEST_URL;
         this.verifyUrl = KHALTI_VERIFY_URL;
-        this.verifyUrlForTest = KHALTI_VERIFY_TEST_URL;
     }
 
 
@@ -103,10 +100,9 @@ export class KhaltiService {
         if (!amount) {
             throw new BadRequestException("amount key missing for validating khalti payment");
         }
-        const url = this.paymentMode.localeCompare(PaymentMode.TEST) == 0 ? this.verifyUrlForTest : this.verifyUrl;
         return await firstValueFrom(this.httpService
             .post(
-                `${url}`,
+                this.verifyUrl,
                 {token, amount},
                 {
                     headers: {
