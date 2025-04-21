@@ -8,9 +8,9 @@ import {
     KHALTI_PAYMENT_TEST_URL,
     KHALTI_PAYMENT_URL,
     KHALTI_VERIFY_URL,
-    KhaltiDto,
+    KhaltiDto, KhaltiInitResponse,
     KhaltiOptions,
-    KhaltiRequestDto,
+    KhaltiRequestDto, KhaltiResponseDto,
     PaymentMode
 } from "./khalti.interface";
 
@@ -40,7 +40,7 @@ export class KhaltiService {
     }
 
 
-    async init(khaltiRequestDto: KhaltiRequestDto) {
+    async init(khaltiRequestDto: KhaltiRequestDto):Promise<KhaltiInitResponse> {
         const {
             returnUrl,
             websiteUrl,
@@ -65,7 +65,7 @@ export class KhaltiService {
             product_details: productDetails
         }
 
-        return await firstValueFrom(this.httpService
+        const response =  await firstValueFrom(this.httpService
             .post(
                 this.paymentMode.localeCompare(PaymentMode.TEST) == 0 ? this.initiateUrlForTest : this.initiateUrl,
                 khaltiDto, {
@@ -73,23 +73,49 @@ export class KhaltiService {
                         Authorization: this.secretKeyEPayment,
                     },
                 }));
+        if(response && response?.status == 200 && response?.data){
+            const {pidx,payment_url,expires_in,expires_at} = response?.data;
+            return{
+                pidx: pidx,
+                paymentUrl: payment_url,
+                expiresIn: expires_in,
+                expiresAt: expires_at,
+            }
+        }
     }
 
-    async lookUp(data: any) {
-        const {pidx} = data;
-        if (!pidx) {
-            throw new BadRequestException("pidx missing for validating khalti payment");
-        }
-        return await firstValueFrom(this.httpService
-            .post(
-                this.paymentMode.localeCompare(PaymentMode.TEST) == 0 ? this.lookupUrlForTest : this.lookupUrl,
-                {pidx},
-                {
-                    headers: {
-                        Authorization: this.secretKeyEPayment,
+    async lookUp(data: any):Promise<KhaltiResponseDto> {
+        try{
+            const {pidx} = data;
+            if (!pidx) {
+                throw new BadRequestException("pidx missing for validating khalti payment");
+            }
+            const response = await firstValueFrom(this.httpService
+                .post(
+                    this.paymentMode.localeCompare(PaymentMode.TEST) == 0 ? this.lookupUrlForTest : this.lookupUrl,
+                    {pidx},
+                    {
+                        headers: {
+                            Authorization: this.secretKeyEPayment,
+                        },
                     },
-                },
-            ));
+                ));
+
+            if(response && response?.status == 200 && response?.data){
+                const {pidx,total_amount,status,transaction_id,fee,refunded} = response?.data;
+                return{
+                    pidx,
+                    totalAmount:total_amount,
+                    status,
+                    transactionId:transaction_id,
+                    fee,
+                    refunded
+                }
+            }
+            throw new InternalServerErrorException('Unexpected response from Khalti lookup endpoint');
+        }catch (error:any) {
+            throw new InternalServerErrorException(`Error in payment verification \n ${error?.message}`);
+        }
     }
 
     async verify(data: any) {

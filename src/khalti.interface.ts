@@ -65,6 +65,22 @@ export interface KhaltiOptions {
     lookupUrlForTest?: string;
 }
 
+export interface KhaltiInitResponse{
+    pidx:string;
+    paymentUrl:string;
+    expiresAt:string;
+    expiresIn:number;
+}
+
+export interface KhaltiResponseDto{
+    pidx:string;
+    totalAmount:number
+    status:string
+    transactionId:string;
+    fee:string;
+    refunded:boolean;
+}
+
 
 type KhaltiAsyncOptions =
     Pick<ModuleMetadata, 'imports'>
