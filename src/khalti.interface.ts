@@ -1,9 +1,9 @@
 import {FactoryProvider, ModuleMetadata} from "@nestjs/common";
 
 export const KHALTI_CONFIG_OPTIONS = 'KHALTI_CONFIG_OPTIONS'
-export const KHALTI_PAYMENT_TEST_URL = 'https://a.khalti.com/api/v2/epayment/initiate/'
+export const KHALTI_PAYMENT_TEST_URL = 'https://dev.khalti.com/api/v2/epayment/initiate/'
 export const KHALTI_PAYMENT_URL = 'https://khalti.com/api/v2/epayment/initiate/'
-export const KHALTI_LOOKUP_TEST_URL = 'https://a.khalti.com/api/v2/epayment/lookup/'
+export const KHALTI_LOOKUP_TEST_URL = 'https://dev.khalti.com/api/v2/epayment/lookup/'
 export const KHALTI_LOOKUP_URL = 'https://khalti.com/api/v2/epayment/lookup/'
 export const KHALTI_VERIFY_URL = 'https://khalti.com/api/v2/payment/verify/'
 
