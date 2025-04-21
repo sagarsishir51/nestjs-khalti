@@ -1,16 +1,16 @@
 ## Introduction
-This is simple wrapper for Khalti Payment. It supports ePayment Gateway(NEW) and transaction verification, but later more will be added. Just ping us or open pull request and contribute :)
+This is a simple wrapper for Khalti Payment extended from [@dallotech/nestjs-khalti](https://github.com/DalloTech/nestjs-khalti). It supports ePayment Gateway(NEW) and transaction verification, but later more will be added. Just ping us or open pull request and contribute :)
 ## Installation
 
 ```bash
-$ npm i --save @dallotech/nestjs-khalti 
-$ yarn add @dallotech/nestjs-khalti 
+$ npm i --save nestjs-khalti 
+$ yarn add nestjs-khalti 
 ```
 
 #### Importing module Async
 
 ```typescript
-import { KhaltiModule } from '@dallotech/nestjs-khalti';
+import { KhaltiModule } from 'nestjs-khalti';
 @Module({
   imports: [
       KhaltiModule.registerAsync({
@@ -32,7 +32,7 @@ export class YourModule {}
 #### Calling Init Method to initialize payment for ePayment Gateway(NEW)
 
 ```typescript
-import { KhaltiService,KhaltiRequestDto } from '@dallotech/nestjs-khalti';
+import { KhaltiService,KhaltiRequestDto } from 'nestjs-khalti';
 
 @Injectable()
 export class YourService {
@@ -58,7 +58,7 @@ export class YourService {
 #### Calling LookUp Method for ePayment Gateway(NEW)
 
 ```typescript
-import { KhaltiService } from '@dallotech/nestjs-khalti';
+import { KhaltiService } from 'nestjs-khalti';
 
 @Injectable()
 export class YourService {
@@ -76,7 +76,7 @@ export class YourService {
 #### Calling transaction verification for Khalti
 
 ```typescript
-import { KhaltiService } from '@dallotech/nestjs-khalti';
+import { KhaltiService } from 'nestjs-khalti';
 
 @Injectable()
 export class YourService {
