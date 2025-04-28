@@ -18,7 +18,6 @@ import {
 export class KhaltiService {
     private readonly paymentMode = null;
     private readonly secretKey = null;
-    private readonly secretKeyEPayment = null;
     private readonly initiateUrl = null;
     private readonly initiateUrlForTest = null;
     private readonly lookupUrl = null;
@@ -31,7 +30,6 @@ export class KhaltiService {
         }
         this.paymentMode = options.paymentMode || PaymentMode.TEST;
         this.secretKey = options.secretKey;
-        this.secretKeyEPayment = options?.secretKeyEPayment || options?.secretKey;
         this.initiateUrl = options.initiateUrl || KHALTI_PAYMENT_URL;
         this.initiateUrlForTest = options.initiateUrlForTest || KHALTI_PAYMENT_TEST_URL;
         this.lookupUrl = options.lookupUrl || KHALTI_LOOKUP_URL;
@@ -70,7 +68,7 @@ export class KhaltiService {
                 this.paymentMode.localeCompare(PaymentMode.TEST) == 0 ? this.initiateUrlForTest : this.initiateUrl,
                 khaltiDto, {
                     headers: {
-                        Authorization: this.secretKeyEPayment,
+                        Authorization: this.secretKey,
                     },
                 }));
         if(response && response?.status == 200 && response?.data){
@@ -96,7 +94,7 @@ export class KhaltiService {
                     {pidx},
                     {
                         headers: {
-                            Authorization: this.secretKeyEPayment,
+                            Authorization: this.secretKey,
                         },
                     },
                 ));
@@ -116,29 +114,6 @@ export class KhaltiService {
         }catch (error:any) {
             throw new InternalServerErrorException(`Error in payment verification \n ${error?.message}`);
         }
-    }
-
-    async verify(data: any) {
-        const {token, amount} = data;
-        if (!token) {
-            throw new BadRequestException("token key missing for validating khalti payment");
-        }
-        if (!amount) {
-            throw new BadRequestException("amount key missing for validating khalti payment");
-        }
-        return await firstValueFrom(this.httpService
-            .post(
-                this.verifyUrl,
-                {token, amount},
-                {
-                    headers: {
-                        Authorization: this.secretKey,
-                    }
-                    ,
-                }
-                ,
-            ))
-            ;
     }
 
 }

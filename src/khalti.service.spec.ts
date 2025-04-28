@@ -4,7 +4,7 @@ import {KhaltiOptions, KhaltiRequestDto, PaymentMode} from "./khalti.interface";
 
 describe('KhaltiService', () => {
     let data:KhaltiOptions={
-        paymentMode: PaymentMode.TEST, secretKeyEPayment: "Key 160f7902da124fcf829432576f2437a2",
+        paymentMode: PaymentMode.TEST,
         secretKey:"Key 160f7902da124fcf829432576f2437a2"
     }
     let khaltiService: KhaltiService;
