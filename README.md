@@ -18,8 +18,6 @@ import { KhaltiModule } from 'nestjs-khalti';
           inject: [ConfigService],
           useFactory: (configService: ConfigService<AllConfig>) => ({
               secretKey: configService.get("----your key-----", {infer: true}),
-              //optional if different key is required for EPayment flow
-              secretKeyEPayment: configService.get("----your key-----", {infer: true}),
               paymentMode: configService.get("----your key-----", {infer: true}),
           })
       }),
@@ -68,25 +66,6 @@ export class YourService {
         //...your code
         const {pidx} = data;
         const response = await this.khaltiService.verify({pidx});
-        //..your code can verify the response data with your business logic and response format
-  }
-}
-```
-
-#### Calling transaction verification for Khalti
-
-```typescript
-import { KhaltiService } from 'nestjs-khalti';
-
-@Injectable()
-export class YourService {
-  constructor(private khaltiService: KhaltiService) {}
-    
-    async verifyPayment(data){
-        //...your code
-        const {token,amount} = data;
-        //amount needs to be in paisa for khalti
-        const response = await this.khaltiService.verify({token,amount:amount*100});
         //..your code can verify the response data with your business logic and response format
   }
 }
